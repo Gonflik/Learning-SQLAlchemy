@@ -64,7 +64,7 @@ def create_comment(session: Session, user_id: int, post_id: int, text: str):
 
 def read_user(session: Session,user_id: int):
     stmt = select(User).where(User.id == user_id)
-    print(session.scalars(stmt).one())
+    print(session.scalars(stmt).one_or_none())
 
 
 def update_username(session: Session,new_name: str, user_id: int):
@@ -102,3 +102,5 @@ with Session(engine) as session:
     read_user(session, 1)
     delete_user(session, 1)
     session.commit()
+
+    read_user(session, 1)
