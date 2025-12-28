@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import String,Text, create_engine, ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship, Session
 
-engine = create_engine("sqlite://", echo=True)
+engine = create_engine("sqlite://")
 
 class Base(DeclarativeBase):
     pass
@@ -18,7 +18,7 @@ class User(Base):
     comments: Mapped[List["Comment"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"User(id: {self.id}, name: {self.name})"
+        return f"{'#'*40} \nUser(id: {self.id}, name: {self.name}) \nPosts: {len(self.posts)},Comments: {len(self.comments)}\n{'#'*40}"
 
 class Post(Base):
     __tablename__ = "user_post"
@@ -32,8 +32,8 @@ class Post(Base):
     comments: Mapped[List["Comment"]] = relationship(back_populates="post")
 
     def __repr__(self):
-        return f"Post(id: {self.id}, user_id: {self.user_id}, title: {self.title}, text: {self.text})"
-    
+        return f"Post(id: {self.id}, user_id: {self.user_id}, title: {self.title}, text: {self.text[:10]}...)"
+                
 class Comment(Base):
     __tablename__ = "user_comment"
 
@@ -46,7 +46,7 @@ class Comment(Base):
     post: Mapped["Post"] = relationship(back_populates="comments")
 
     def __repr__(self):
-        return f"Comment(id: {self.id!r}, user_id: {self.user_id!r}, post_id: {self.post_id!r}, text: {self.text!r})"
+        return f"{self.user.name}: {self.text[:10]}... \n(id: {self.id!r}, user_id: {self.user_id!r}, post_id: {self.post_id!r}, text: {self.text!r})"
 
 Base.metadata.create_all(engine)
 
@@ -54,9 +54,18 @@ def create_user(session: Session,name: str):
     user = User(name=name)
     session.add(user)
 
+def create_post(session: Session, user_id: int, title: str, text: str):
+    post  = Post(user_id=user_id,title=title,text=text)
+    session.add(post)
+
+def create_comment(session: Session, user_id: int, post_id: int, text: str):
+    comment = Comment(user_id=user_id, post_id=post_id, text=text)
+    session.add(comment)
+
 def read_user(session: Session,user_id: int):
     stmt = select(User).where(User.id == user_id)
-    print(session.scalars(stmt).one_or_none())
+    print(session.scalars(stmt).one())
+
 
 def update_username(session: Session,new_name: str, user_id: int):
     """
@@ -66,10 +75,7 @@ def update_username(session: Session,new_name: str, user_id: int):
     #якшо шукати по PK то можна юзати get() замість select() ,а потім  scalars()
     """
     user = session.get(User, user_id)
-    if user:
-        user.name = new_name
-    else:
-        print(f"Error: User with ID {user_id} not found.")
+    user.name = new_name
 
 def delete_user(session: Session,user_id: int):
     stmt = select(User).where(User.id == user_id)
@@ -81,6 +87,12 @@ def delete_user(session: Session,user_id: int):
 
 with Session(engine) as session:
     create_user(session,"Bob")
+    session.commit()
+
+    create_post(session, 1, "Bebroski", "lorempisum loremipsum bababababababababaabab")
+    session.commit()
+
+    create_comment(session, 1, 1, "Boze chel watafa fafafa")
     session.commit()
 
     read_user(session, 1)
