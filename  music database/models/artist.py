@@ -1,4 +1,6 @@
 from .base import Base
+from .artist_proj_association import artist_proj_association
+from .artist_instrument_association import artist_instrument_association
 from typing import List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -11,5 +13,12 @@ class Artist(Base):
     age: Mapped[int]
     gender: Mapped[str] = mapped_column(nullable=True)
     
-    instruments: Mapped[List["Instrument"]] = relationship(back_populates="artist")
+    musical_projects: Mapped[List["Musical_project"]] = relationship(
+        secondary=artist_proj_association,
+        back_populates="artists"
+    )
+    instruments: Mapped[List["Instrument"]] = relationship(
+        secondary=artist_instrument_association,
+        back_populates="artists"
+    )
     
