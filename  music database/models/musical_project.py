@@ -1,5 +1,5 @@
 from .base import Base
-from .artist_proj_association import artist_proj_association
+from .associations.artist_proj_association import artist_proj_association
 from typing import List
 from sqlalchemy import String, ForeignKey 
 from sqlalchemy.orm import Mapped, mapped_column, relationship

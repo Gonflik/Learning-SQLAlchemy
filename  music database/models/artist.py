@@ -1,6 +1,6 @@
 from .base import Base
-from .artist_proj_association import artist_proj_association
-from .artist_instrument_association import artist_instrument_association
+from .associations.artist_proj_association import artist_proj_association
+from .associations.artist_instrument_association import artist_instrument_association
 from typing import List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
