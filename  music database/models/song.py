@@ -17,4 +17,4 @@ class Song(Base):
     album: Mapped[Optional["Album"]] = relationship(back_populates="songs")
 
     def __repr__(self):
-        return f"Song(name: {self.name}, id: {self.id}, lentgh: {self.length}, album_id: {self.album_id})"
+        return f"<'{self.__class__}' name: {self.name}, id: {self.id}, lentgh: {self.length}, album_id: {self.album_id}>"

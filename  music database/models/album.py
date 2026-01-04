@@ -13,3 +13,6 @@ class Album(Base):
 
     musical_project: Mapped["Musical_project"] = relationship(back_populates="album")
     songs: Mapped[List["Songs"]] = relationship(back_populates="album")
+
+    def __repr__(self):
+        return f"<'{self.__class__}' name: {self.name}, id: {self.id}, lentgh: {self.length}, mus_project_id: {self.mus_project_id}>"

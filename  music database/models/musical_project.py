@@ -1,6 +1,6 @@
 from .base import Base
 from .associations.artist_proj_association import artist_proj_association
-from typing import List
+from typing import List, Optional
 from sqlalchemy import String, ForeignKey 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -16,5 +16,8 @@ class Musical_project(Base):
         secondary=artist_proj_association,
         back_populates="musical_project"
     )
-    album: Mapped[List["Album"]] = relationship(back_populates="musical_project")
-    song: Mapped[List["Song"]] = relationship(back_populates="musical_project")
+    album: Mapped[Optional[List["Album"]]] = relationship(back_populates="musical_project")
+    song: Mapped[Optional[List["Song"]]] = relationship(back_populates="musical_project")
+
+    def __repr__(self):
+        return f"<'{self.__class__}' name: {self.name}, id: {self.id}>"
