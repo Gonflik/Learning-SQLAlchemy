@@ -10,7 +10,7 @@ class Musical_project(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100))
     description: Mapped[Optional[str]] = mapped_column(String(500))
-    monthly_listens: Mapped[Optional[int]]
+    monthly_listens: Mapped[int] = mapped_column(default=0)
 
     artists: Mapped[List["Artist"]] = relationship(
         secondary=artist_proj_association,
