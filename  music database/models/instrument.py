@@ -5,15 +5,15 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Instrument(Base):
-    __table__ = "instrument"
+    __tablename__ = "instrument"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100))
     
-    artist: Mapped[Optional[List["Artist"]]] = relationship(
+    artists: Mapped[Optional[List["Artist"]]] = relationship(
         secondary=artist_instrument_association,
         back_populates="instruments"
     )
 
     def __repr__(self):
-        return f"<'{self.__class__}' name: {self.name}, id: {self.id}>"
+        return f"<{self.__class__} name: {self.name}, id: {self.id}>"

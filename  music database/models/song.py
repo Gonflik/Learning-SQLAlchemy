@@ -4,7 +4,7 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Song(Base):
-    __table__ = "song"
+    __tablename__ = "song"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100))
@@ -17,4 +17,4 @@ class Song(Base):
     album: Mapped[Optional["Album"]] = relationship(back_populates="songs")
 
     def __repr__(self):
-        return f"<'{self.__class__}' name: {self.name}, id: {self.id}, lentgh: {self.length}, album_id: {self.album_id}>"
+        return f"<{self.__class__} name: {self.name}, id: {self.id}, lentgh: {self.length},mus_project_id: {self.mus_project_id}, album_id: {self.album_id}>"
