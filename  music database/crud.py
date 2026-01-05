@@ -66,7 +66,7 @@ def create_musical_project(session: Session,
                            name: str,
                            arist_ids: list[int], 
                            description: Optional[str] = None, 
-                           monthly_listens: Optional[int] = None,
+                           monthly_listens: Optional[int] = None
                            
 ):
     mus_project = Musical_project(name=name,description=description,monthly_listens=monthly_listens)
@@ -78,8 +78,19 @@ def create_musical_project(session: Session,
 
     session.add(mus_project)
 
-def get_musical_project():
-    pass
+def get_musical_project_by_name(session: Session, name: str):
+    stmt = select(Musical_project).where(Musical_project.name==name)
+    mus_project = session.scalars(stmt).one_or_none()
+    return mus_project
+
+def add_member_to_mus_project(session: Session, mus_project_id: int, artist_id: int):
+    mus_project = session.get(Musical_project, mus_project_id)
+    artist = session.get(Artist, artist_id)
+
+    if mus_project and artist:
+        mus_project.artists.append(artist)
+    else:
+        return False
 
 
 
