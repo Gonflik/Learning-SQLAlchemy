@@ -13,6 +13,10 @@ def get_song_by_name(session: Session, name: str):
     song = session.scalars(stmt).one_or_none()
     return song
 
+def read_song_by_name(session: Session, name: str):
+    song = get_song_by_name(session, name)
+    print(song)
+
 def update_song_name(session: Session, new_name: str, song_id: int):
     song = session.get(Song, song_id)
     song.name = new_name
@@ -36,6 +40,10 @@ def get_artist_by_name(session: Session, name: str):
     stmt = select(Artist).where(Artist.name==name)
     artist = session.scalars(stmt).one_or_none()
     return artist
+
+def read_artist_by_name(session: Session, name: str):
+    artist = get_artist_by_name(session, name)
+    print(artist)
 
 def update_artist(session: Session,
                 artist_id: int ,
@@ -83,6 +91,10 @@ def get_musical_project_by_name(session: Session, name: str):
     mus_project = session.scalars(stmt).one_or_none()
     return mus_project
 
+def read_musical_project_by_name(session: Session, name: str):
+    mus_proj = get_musical_project_by_name(session, name)
+    print(mus_proj)
+
 def add_member_to_mus_project(session: Session, mus_project_id: int, artist_id: int):
     mus_project = session.get(Musical_project, mus_project_id)
     artist = session.get(Artist, artist_id)
@@ -92,5 +104,74 @@ def add_member_to_mus_project(session: Session, mus_project_id: int, artist_id: 
     else:
         return False
 
+def delete_mus_project(session: Session, name: str):
+    mus = get_musical_project_by_name(name)
+    if mus:
+        session.delete(mus)
+    else:
+        return False
 
+"---------------------------------------------ALBUM CRUD-------------------------------------------------"
+def create_album(session: Session, name: str, mus_project: id):
+    album = Album(name=name,mus_project=mus_project)
+    session.add(album)
 
+def get_album_by_id(session: Session, album_id: int):
+    album = session.get(Album, album_id)
+    return album
+
+def get_album_by_name(session: Session, name: str):
+    stmt = select(Album).where(Album.name==name)
+    album = session.scalars(stmt).one_or_none
+    return album
+
+def read_album_by_name(session: Session, name: str):
+    album = get_album_by_name(session, name)
+    print(album)
+
+def update_album_name_by_id(session: Session, album_id: int, new_name: str):
+    album = get_album_by_id(session, album_id)
+    if album:
+        album.name = new_name
+    else:
+        return False
+    
+def delete_album_by_id(session: Session, album_id: int):
+    album = get_album_by_id(session, album_id)
+    if album:
+        session.delete(album)
+    else:
+        return False
+    
+"-------------------------------------------------INSTRUMENT CRUD--------------------------------------------"
+def create_instrument(session: Session, name: str):
+    instrument = Instrument(name=name)
+    session.add(instrument)
+
+def get_instrument_by_name(session: Session, name: str):
+    stmt = select(Instrument).where(Instrument.name==name)
+    instrument = session.scalars(stmt).one_or_none()
+    return instrument
+
+def get_instrument_by_id(session: Session, instrument_id: int):
+    stmt = select(Instrument).where(Instrument.id==instrument_id)
+    instrument = session.scalars(stmt).one_or_none()
+    return instrument
+
+def read_instrument_by_name(session: Session, name: str):
+    instrument = get_instrument_by_name(session, name)
+    print(instrument)
+
+def update_instrument_name_by_name(session: Session, old_name: str, new_name: str):
+    instrument = get_instrument_by_name(session, old_name)
+    if instrument:
+        instrument.name = new_name
+    else:
+        return False
+    
+def delete_instrument_by_id(session: Session, instrument_id: int):
+    instrument = get_instrument_by_id(session, instrument_id)
+    if instrument:
+        session.delete(instrument)
+    else:
+        return False
