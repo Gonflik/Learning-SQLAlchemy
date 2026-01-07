@@ -13,17 +13,23 @@ def get_song_by_name(session: Session, name: str):
     song = session.scalars(stmt).one_or_none()
     return song
 
+def get_song_by_id(session: Session, song_id: int):
+    song = session.get(Song, song_id)
+    return song
+
 def read_song_by_name(session: Session, name: str):
     song = get_song_by_name(session, name)
-    print(song)
+    if song:
+        print(song)
+    else:
+        print(f"Song: {name} not found.")
 
-def update_song_name(session: Session, new_name: str, song_id: int):
+def update_song_name_by_id(session: Session, new_name: str, song_id: int):
     song = session.get(Song, song_id)
     song.name = new_name
 
-def delete_song(session: Session, song_id: int):
-    stmt = select(Song).where(Song.id==song_id)
-    song_to_del = session.scalars(stmt).one_or_none()
+def delete_song_by_id(session: Session, song_id: int):
+    song_to_del = session.get(Song, song_id)
     if song_to_del:
         session.delete(song_to_del)
     else:
@@ -41,11 +47,18 @@ def get_artist_by_name(session: Session, name: str):
     artist = session.scalars(stmt).one_or_none()
     return artist
 
+def get_artist_by_id(session: Session, artist_id: int):
+    artist = session.get(Artist, artist_id)
+    return artist
+
 def read_artist_by_name(session: Session, name: str):
     artist = get_artist_by_name(session, name)
-    print(artist)
+    if artist:
+        print(artist)
+    else:
+        print(f"Artist: {name} not found.")
 
-def update_artist(session: Session,
+def update_artist_by_id(session: Session,
                 artist_id: int ,
                 new_name: Optional[str] = None,
                 new_age: Optional[int] = None,
@@ -59,9 +72,8 @@ def update_artist(session: Session,
     elif new_gender:
         artist.gender = new_gender
 
-def delete_artist(session: Session, artist_id: int):
-    stmt = select(Artist).where(Artist.id==artist_id)
-    artist_to_del = session.scalars(stmt).one_or_none()
+def delete_artist_by_id(session: Session, artist_id: int):
+    artist_to_del = session.get(Artist, artist_id)
     if artist_to_del:
         session.delete(artist_to_del)
     else:
@@ -91,9 +103,16 @@ def get_musical_project_by_name(session: Session, name: str):
     mus_project = session.scalars(stmt).one_or_none()
     return mus_project
 
+def get_musical_project_by_id(session: Session, mus_proj_id: int):
+    mus_proj = session.get(Musical_project, mus_proj_id)
+    return mus_proj
+
 def read_musical_project_by_name(session: Session, name: str):
     mus_proj = get_musical_project_by_name(session, name)
-    print(mus_proj)
+    if mus_proj:
+        print(mus_proj)
+    else:
+        print(f"Musical project: {name} not found.")
 
 def add_member_to_mus_project(session: Session, mus_project_id: int, artist_id: int):
     mus_project = session.get(Musical_project, mus_project_id)
@@ -104,8 +123,8 @@ def add_member_to_mus_project(session: Session, mus_project_id: int, artist_id: 
     else:
         return False
 
-def delete_mus_project(session: Session, name: str):
-    mus = get_musical_project_by_name(name)
+def delete_mus_project_by_id(session: Session, mus_proj_id: int):
+    mus = session.get(Musical_project, mus_proj_id)
     if mus:
         session.delete(mus)
     else:
@@ -127,17 +146,20 @@ def get_album_by_name(session: Session, name: str):
 
 def read_album_by_name(session: Session, name: str):
     album = get_album_by_name(session, name)
-    print(album)
+    if album:
+        print(album)
+    else:
+        print(f"Album: {name} not found.")
 
 def update_album_name_by_id(session: Session, album_id: int, new_name: str):
-    album = get_album_by_id(session, album_id)
+    album = session.get(Album, album_id)
     if album:
         album.name = new_name
     else:
         return False
     
 def delete_album_by_id(session: Session, album_id: int):
-    album = get_album_by_id(session, album_id)
+    album = session.get(Album, album_id)
     if album:
         session.delete(album)
     else:
@@ -154,13 +176,15 @@ def get_instrument_by_name(session: Session, name: str):
     return instrument
 
 def get_instrument_by_id(session: Session, instrument_id: int):
-    stmt = select(Instrument).where(Instrument.id==instrument_id)
-    instrument = session.scalars(stmt).one_or_none()
+    instrument =  session.get(Instrument, instrument_id)
     return instrument
 
 def read_instrument_by_name(session: Session, name: str):
     instrument = get_instrument_by_name(session, name)
-    print(instrument)
+    if instrument:
+        print(instrument)
+    else:
+        print(f"Instrument: {name} not found.")
 
 def update_instrument_name_by_name(session: Session, old_name: str, new_name: str):
     instrument = get_instrument_by_name(session, old_name)
@@ -170,7 +194,7 @@ def update_instrument_name_by_name(session: Session, old_name: str, new_name: st
         return False
     
 def delete_instrument_by_id(session: Session, instrument_id: int):
-    instrument = get_instrument_by_id(session, instrument_id)
+    instrument = session.get(Instrument, instrument_id)
     if instrument:
         session.delete(instrument)
     else:
