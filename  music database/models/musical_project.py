@@ -14,7 +14,7 @@ class Musical_project(Base):
 
     artists: Mapped[List["Artist"]] = relationship(
         secondary=artist_proj_association,
-        back_populates="musical_project"
+        back_populates="musical_projects"
     )
     albums: Mapped[Optional[List["Album"]]] = relationship(back_populates="musical_project")
     songs: Mapped[Optional[List["Song"]]] = relationship(back_populates="musical_project")

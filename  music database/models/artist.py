@@ -13,7 +13,7 @@ class Artist(Base):
     age: Mapped[Optional[int]]
     gender: Mapped[Optional[str]]
     
-    musical_project: Mapped[List["Musical_project"]] = relationship(
+    musical_projects: Mapped[List["Musical_project"]] = relationship(
         secondary=artist_proj_association,
         back_populates="artists"
     )
