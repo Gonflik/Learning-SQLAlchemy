@@ -1,7 +1,7 @@
 from models import Song, Album, Artist, Musical_project, Instrument
 from typing import Optional
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 "-----------------------------------SONG CRUD-------------------------------------------------"
 def create_song(session: Session, name: str, length: int, mus_project_id: int, album_id: Optional[int] = None):
@@ -27,6 +27,14 @@ def read_song_by_name(session: Session, name: str):
 def update_song_name_by_id(session: Session, new_name: str, song_id: int):
     song = session.get(Song, song_id)
     song.name = new_name
+
+def add_songs_to_album(session: Session, song_ids: list[int], album_id: int):
+    album = session.get(Album, album_id)
+
+    stmt = select(Song).where(Song.id.in_(song_ids))
+    found_songs = session.scalars(stmt).all()
+    
+    album.songs.extend(found_songs)
 
 def delete_song_by_id(session: Session, song_id: int):
     song_to_del = session.get(Song, song_id)
@@ -57,6 +65,25 @@ def read_artist_by_name(session: Session, name: str):
         print(artist)
     else:
         print(f"Artist: {name} not found.")
+
+def read_all_artists(session: Session):
+    stmt = select(Artist).order_by(Artist.name)
+    artists = session.scalars(stmt).all()
+    if artists:
+        for artist in artists:
+            print(artist)
+    else:
+        print("No artists in DB.")
+
+def read_all_artists_with_projects(session: Session):
+    stmt = select(Artist).options(selectinload(Artist.musical_projects)).order_by(Artist.name)
+    artists = session.scalars(stmt).all()
+    print(50*"-")
+    for artist in artists:
+        print(artist)
+        for project in artist.musical_projects:
+            print(f"{artist.name} projects", project)
+        print(50*"-")
 
 def update_artist_by_id(session: Session,
                 artist_id: int ,
