@@ -1,12 +1,16 @@
 from models import Song, Album, Artist, Musical_project, Instrument
 from typing import Optional
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session, selectinload
 
 "-----------------------------------SONG CRUD-------------------------------------------------"
 def create_song(session: Session, name: str, length: int, mus_project_id: int, album_id: Optional[int] = None):
     song = Song(name=name,length=length,mus_project_id=mus_project_id,album_id=album_id)
     session.add(song)
+    session.flush()
+    if song.album_id:
+        album: Album = song.album
+        album.recalculate_length(session)
 
 def get_song_by_name(session: Session, name: str):
     stmt = select(Song).where(Song.name==name)
@@ -33,15 +37,34 @@ def add_songs_to_album(session: Session, song_ids: list[int], album_id: int):
 
     stmt = select(Song).where(Song.id.in_(song_ids))
     found_songs = session.scalars(stmt).all()
-    
+
     album.songs.extend(found_songs)
+    session.flush()
+    album.recalculate_length(session)
 
 def delete_song_by_id(session: Session, song_id: int):
     song_to_del = session.get(Song, song_id)
-    if song_to_del:
-        session.delete(song_to_del)
+    """if song_to_del:
+        if song_to_del.album_id:
+            album: Album = song_to_del.album
+            session.delete(song_to_del)
+            session.flush()
+            album.recalculate_length(session)
+        else:
+            session.delete(song_to_del)
     else:
+        return False"""
+    
+    if not song_to_del:
         return False
+    
+    album: Album = song_to_del.album
+    session.delete(song_to_del)
+    session.flush()
+    if album:
+        album.recalculate_length(session)
+    
+
     
 "-------------------------------------------------------------------------------------------------"
 
@@ -158,8 +181,8 @@ def delete_mus_project_by_id(session: Session, mus_proj_id: int):
         return False
 
 "---------------------------------------------ALBUM CRUD-------------------------------------------------"
-def create_album(session: Session, name: str, mus_project: id):
-    album = Album(name=name,mus_project=mus_project)
+def create_album(session: Session, name: str, mus_project_id: int):
+    album = Album(name=name,mus_project_id=mus_project_id)
     session.add(album)
 
 def get_album_by_id(session: Session, album_id: int):
@@ -168,13 +191,13 @@ def get_album_by_id(session: Session, album_id: int):
 
 def get_album_by_name(session: Session, name: str):
     stmt = select(Album).where(Album.name==name)
-    album = session.scalars(stmt).one_or_none
+    album = session.scalars(stmt).one_or_none()
     return album
 
 def read_album_by_name(session: Session, name: str):
     album = get_album_by_name(session, name)
     if album:
-        print(album)
+        print("---------------ESHKEREEEE----",album)
     else:
         print(f"Album: {name} not found.")
 
