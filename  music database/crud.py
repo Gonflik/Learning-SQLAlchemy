@@ -44,19 +44,9 @@ def add_songs_to_album(session: Session, song_ids: list[int], album_id: int):
 
 def delete_song_by_id(session: Session, song_id: int):
     song_to_del = session.get(Song, song_id)
-    """if song_to_del:
-        if song_to_del.album_id:
-            album: Album = song_to_del.album
-            session.delete(song_to_del)
-            session.flush()
-            album.recalculate_length(session)
-        else:
-            session.delete(song_to_del)
-    else:
-        return False"""
-    
     if not song_to_del:
-        return False
+        print(f" -> No song found with id: {song_id}")
+        return
     
     album: Album = song_to_del.album
     session.delete(song_to_del)
@@ -96,7 +86,7 @@ def read_all_artists(session: Session):
         for artist in artists:
             print(artist)
     else:
-        print("No artists in DB.")
+        print(" -> No artists in DB.")
 
 def read_all_artists_with_projects(session: Session):
     stmt = select(Artist).options(selectinload(Artist.musical_projects)).order_by(Artist.name)
@@ -201,6 +191,20 @@ def read_album_by_name(session: Session, name: str):
     else:
         print(f"Album: {name} not found.")
 
+def read_album_with_songs_by_name_selectinload(session: Session, name: str):
+    stmt = select(Album).options(selectinload(Album.songs)).where(Album.name==name)
+    album = session.scalars(stmt).one_or_none()
+
+    if not album:
+        print(f"No album: {name}")
+        return
+    
+    print(album)
+    for song in album.songs:
+        print(f" -> {song}")
+
+
+    
 def update_album_name_by_id(session: Session, album_id: int, new_name: str):
     album = session.get(Album, album_id)
     if album:
