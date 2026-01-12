@@ -1,7 +1,7 @@
 from models import Artist, Musical_project, Album, Song, Instrument
-from database import engine, init_db
+from models.database import engine, init_db
 from sqlalchemy.orm import Session
-import crud
+import controller.crud as crud
 
 init_db()
 
